@@ -2,7 +2,7 @@
 
 /**
  * Calendar Class
- * @author     Cavid Huseynov
+ * @author Cavid Huseynov
  */
 
 class Calendar
@@ -53,7 +53,7 @@ class Calendar
         $m = $datetime->format('m');
         $d = $datetime->format('d');
 
-        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth);
+        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth, false);
 
     }
 
@@ -76,10 +76,10 @@ class Calendar
         $m = $datetime->format('m');
         $d = $datetime->format('d');
 
-        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth);
+        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth, false);
     }
 
-    private function getDaysInfo($year, $month, $day = 1, $lastDayOfMonth = null)
+    private function getDaysInfo($year, $month, $day = 1, $lastDayOfMonth = null, $isIncluded = true)
     {
         $datetime = new \DateTime();
 
@@ -102,6 +102,7 @@ class Calendar
                 'year' => $year,
                 'month' => $month,
                 'day' => $dayNum,
+                'included' => $isIncluded
             ];
 
             $lastWeekdayNumberOfMonth = $datetime->format('N');
