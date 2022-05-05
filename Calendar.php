@@ -1,15 +1,18 @@
 <?php
 
+/**
+ * Calendar Class
+ * @author     Cavid Huseynov
+ */
+
 class Calendar
 {
     const WEEKDAYS = 7;
 
-    private $maxWeeks = 6;
+    private int $maxWeeks = 6;
 
-    public function getMonth($month)
+    public function getMonth($year, $month): array
     {
-        $year = '2022';
-
         $daysInfo = $this->getDaysInfo($year, $month);
 
 
@@ -21,8 +24,6 @@ class Calendar
                 $daysInfo['days'][$week] = $weekdays + $daysInfo['days'][$week];
             }
         }
-        echo '<pre>';
-
 
         $lastWeeks = $this->getLastWeeks($year, $month, $daysInfo['lastDayOfMonth'], $daysInfo['lastWeekdayNumberOfMonth'], $daysInfo['totalWeeks']);
 
@@ -34,13 +35,7 @@ class Calendar
             $daysInfo['days'][$week] = $daysInfo['days'][$week] + $weekdays;
         }
 
-        //        print_r($firstDayOfWeek);
-        print_r($daysInfo);
-//        print_r($lastWeeks);
-
-
-        die;
-
+        return $daysInfo;
     }
 
 
@@ -121,10 +116,3 @@ class Calendar
         ];
     }
 }
-
-
-$calendar = new Calendar();
-$days = $calendar->getMonth(6);
-
-echo '<pre>';
-print_r($days);
