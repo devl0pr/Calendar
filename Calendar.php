@@ -1,0 +1,130 @@
+<?php
+
+class Calendar
+{
+    const WEEKDAYS = 7;
+
+    private $maxWeeks = 6;
+
+    public function getMonth($month)
+    {
+        $year = '2022';
+
+        $daysInfo = $this->getDaysInfo($year, $month);
+
+
+        if ($daysInfo['firstWeekdayNumberOfMonth'] != 1) {
+
+            $firstWeek = $this->getFirstWeek($year, $month, '1');
+
+            foreach ($firstWeek['days'] as $week => $weekdays) {
+                $daysInfo['days'][$week] = $weekdays + $daysInfo['days'][$week];
+            }
+        }
+        echo '<pre>';
+
+
+        $lastWeeks = $this->getLastWeeks($year, $month, $daysInfo['lastDayOfMonth'], $daysInfo['lastWeekdayNumberOfMonth'], $daysInfo['totalWeeks']);
+
+        foreach ($lastWeeks['days'] as $week => $weekdays) {
+
+            if (!array_key_exists($week, $daysInfo['days'])) {
+                $daysInfo['days'][$week] = [];
+            }
+            $daysInfo['days'][$week] = $daysInfo['days'][$week] + $weekdays;
+        }
+
+        //        print_r($firstDayOfWeek);
+        print_r($daysInfo);
+//        print_r($lastWeeks);
+
+
+        die;
+
+    }
+
+
+    private function getFirstWeek(string $year, string $month, string $day): array
+    {
+        $datetime = new \DateTime();
+
+        $datetime->setDate($year, $month, $day);
+
+        $datetime->modify('monday this week');
+
+        $lastDayOfMonth = $datetime->format('t'); // 28 - 31
+
+        $y = $datetime->format('Y');
+        $m = $datetime->format('m');
+        $d = $datetime->format('d');
+
+        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth);
+
+    }
+
+    private function getLastWeeks(string $year, string $month, string $day, $lastWeekdayNumberOfMonth, $totalWeeks): array
+    {
+        $datetime = new \DateTime();
+
+        $datetime->setDate($year, $month, $day);
+
+        $datetime->modify('first day of next month');
+
+
+        $lastDayOfMonth = self::WEEKDAYS - $lastWeekdayNumberOfMonth;
+
+        if ($totalWeeks < $this->maxWeeks) {
+            $lastDayOfMonth += (self::WEEKDAYS * ($this->maxWeeks - $totalWeeks));
+        }
+
+        $y = $datetime->format('Y');
+        $m = $datetime->format('m');
+        $d = $datetime->format('d');
+
+        return $this->getDaysInfo($y, $m, $d, $lastDayOfMonth);
+    }
+
+    private function getDaysInfo($year, $month, $day = 1, $lastDayOfMonth = null)
+    {
+        $datetime = new \DateTime();
+
+        $datetime->setDate($year, $month, $day);
+
+        $days = [];
+
+        if (!$lastDayOfMonth) {
+            $lastDayOfMonth = $datetime->format('t'); // 28 - 31;
+        }
+
+        $firstWeekdayNumberOfMonth = $datetime->format('N');
+
+        foreach (range($day, $lastDayOfMonth) as $dayNum) {
+            $datetime->setDate($year, $month, $dayNum);
+
+            $days[$datetime->format('W')][$datetime->format('N')] = [
+                'weekdayNameShort' => $datetime->format('D'),
+                'weekdayNameFull' => $datetime->format('l'),
+                'year' => $year,
+                'month' => $month,
+                'day' => $dayNum,
+            ];
+
+            $lastWeekdayNumberOfMonth = $datetime->format('N');
+        }
+
+        return [
+            'lastDayOfMonth' => $lastDayOfMonth,
+            'firstWeekdayNumberOfMonth' => $firstWeekdayNumberOfMonth,
+            'lastWeekdayNumberOfMonth' => $lastWeekdayNumberOfMonth,
+            'totalWeeks' => count($days),
+            'days' => $days
+        ];
+    }
+}
+
+
+$calendar = new Calendar();
+$days = $calendar->getMonth(6);
+
+echo '<pre>';
+print_r($days);
